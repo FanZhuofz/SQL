@@ -1,0 +1,49 @@
+
+-- *********字符串函数**********
+-- ----查询字符串的长度---------------------
+select 字段名,char_length(字段名) from 表名;
+-- ----查询长度并显示字符串的大小写【upper大写；lower小写】---------
+select 字段名,char_length(字段名),upper(字段名)，lower(字段名) from 表名;
+--------------------------------------------------------------------------------
+-- *********数学函数************
+-- --求绝对值函数-----------------
+SELECT num,ABS(num) FROM hanshu;
+-- --求平方根函数-----------------
+SELECT SQRT(4) FROM hanshu;   -- --对4求平方根
+-- --求余函数------------------
+SELECT MOD(9,2) FROM hanshu;	-- --求9%2的值
+------------------------------------------------------------------------------------
+-- *********加密函数************
+-- --PASSWORD加密（不可逆）-----
+INSERT INTO hanshu VALUES(NULL,'PASSWORD',PASSWORD('123456'),123456);
+-- --MD5加密（不可逆）------
+INSERT INTO hanshu VALUES(NULL,'MD5',MD5('123456'),123456);
+-- --ENCODE(str,pswd_str)加密，结果为二进制数，必须用BLOB类型字段保存
+-- ------------------  'abcd'为待加密字符串，'aa'为钥匙-----
+INSERT INTO hanshu VALUES(NULL,'ENCODE',MD5('123456'),123456,ENCODE('abcd','aa'));
+-- -----DECODE解密----DECODE(crypt_str,pswd_str)解密函数------利用'aa'钥匙-----------
+SELECT DECODE(ENCODE,'aa') FROM hanshu WHERE id=14;
+
+
+-- ***************************************** --
+日期和时间函数
+1,CURDATE() 返回当前日期；
+2,CURTIME() 返回当前时间；
+3,MONTH(d)  返回日期d中的月份值，范围是1-12。
+
+字符串函数
+1,CHAR_LENGTH(s) 计算字符串s的字符数；
+2,UPPER(s)  把所有字母变成大写字母；
+3,LOWER(s)  把所有字母变成小写字母。
+
+数学函数
+1,ABS(x) 求绝对值；
+2,SQRT(x) 求平方根；
+3,MOD(x,y) 求余。
+
+加密函数
+1,PASSWORD(str)  一般对用户密码加密  不可逆；
+2,MD5(str)  普通加密 不可逆
+3,ENCODE(str,pswd_str) 加密函数，结果是一个二进制数，必须使用BLOB类型的字段来保存它；
+4,DECODE(crypt_str,pswd_str)  解密函数。
+-- ****************************************** --  

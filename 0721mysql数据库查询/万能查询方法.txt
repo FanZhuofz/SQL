@@ -1,0 +1,26 @@
+//万能查询方法
+
+public List selectPubs(String sql){
+		List list=new ArrayList();
+		DbConn conn=new DbConn();
+		Connection con=conn.getConn();
+		PreparedStatement pst;
+		try {
+			pst = con.prepareStatement(sql);
+			ResultSetMetaData rm=pst.getMetaData();//获取查询的结构
+			int m=rm.getColumnCount();//获取查询中的总列数
+			ResultSet rs=pst.executeQuery();
+			while(rs.next()){
+				Map map=new HashMap();
+				for(int i=1;i<=m;i++){
+					String col=rm.getColumnName(i);
+					map.put(col,rs.getString(col));
+				}
+				list.add(map);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}

@@ -1,0 +1,59 @@
+-- 【1】查询哪些作者没有出书，显示作者名字（三种方法）
+-- 1【嵌套】---ok
+SELECT au_lname FROM AUTHORS WHERE au_id NOT IN(
+ SELECT au_id FROM titleauthor
+);
+-- 2【自然链接】
+SELECT au_lname FROM AUTHORS WHERE au_id NOT IN (SELECT au.au_id FROM AUTHORS au,titleauthor ti WHERE au.au_id = ti.au_id);
+
+
+-- 将查询的结果赋给a，然后查询--
+-- SELECT * FROM (SELECT au.au_lname FROM AUTHORS au,titleauthor ti WHERE au.au_id = ti.au_id) a;
+-- 3【外链接】
+-- ELECT * FROM (SELECT au.au_lname FROM AUTHORS au INNER JOIN titleauthor ti ON au.au_id=ti.au_id) a;
+  
+
+
+
+  
+  -- 【2】查询出版了两本（含）图书以上的作者【au_id>=2】，显示作者信息（三种方法）
+  
+-- 1【嵌套】  count(au_id)可以写成count(1)和count(*)，但是count(1)安全
+SELECT * FROM AUTHORS WHERE au_id IN(
+ SELECT au_id FROM titleauthor GROUP BY au_id HAVING COUNT(au_id)>=2
+);
+
+-- 2【自然链接】---ok
+SELECT au.* FROM AUTHORS au,titleauthor ti WHERE ti.au_id=au.au_id GROUP BY ti.au_id HAVING COUNT(ti.au_id)>=2;
+ 
+-- 3【外链接】
+SELECT au.* FROM AUTHORS au INNER JOIN titleauthor ti ON ti.au_id=au.au_id GROUP BY ti.au_id HAVING COUNT(ti.au_id)>=2;
+  
+  
+  
+  
+  -- 【3】查询哪些图书是两个（含）以上作者合著的【title_id>=2】，显示书名和作者名（两种方法）
+
+-- 1【自然链接】
+SELECT t.title,au.au_lname FROM AUTHORS au,titles t,titleauthor ti WHERE au.au_id=ti.au_id AND ti.title_id=t.title_id GROUP BY ti.title_id HAVING COUNT(ti.title_id)>=2;
+ 
+-- 2【外链接】
+SELECT t.title,au.au_lname FROM AUTHORS au INNER JOIN titleauthor ti ON au.au_id=ti.au_id
+ INNER JOIN titles t ON ti.title_id=t.title_id GROUP BY ti.title_id HAVING COUNT(ti.title_id)>=2;
+ 
+ 
+ 
+ 
+ 
+  -- 左链接 au.au_id里面有 ti.au_id里面没有的显示null
+ SELECT * FROM AUTHORS au LEFT JOIN titleauthor ti ON au.au_id=ti.au_id;
+  -- 右链接 只显示ti.au_id里面所有的和在au.au_id里面包含(ti.au_id)的
+ SELECT * FROM AUTHORS au RIGHT JOIN titleauthor ti ON au.au_id=ti.au_id;
+  -- 全连接  显示两个表的所有信息
+ SELECT * FROM AUTHORS au FULL JOIN titleauthor ti ON au.au_id=ti.au_id;
+ 
+ -- 查询电话号码第一位是4，第二位随意，第三位是5，后面随意的信息【‘_’表示某一位，‘%’表示任意几位authors】
+ SELECT * FROM AUTHORS WHERE phone LIKE '4_5%' 
+ 
+ -- 查询第一位是‘%’第二位是随意一位，第三位是‘_’，后面随意的au_fname
+ SELECT * FROM AUTHORS WHERE au_fname LIKE '\%_\_%' 

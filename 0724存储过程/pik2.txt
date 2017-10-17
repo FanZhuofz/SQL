@@ -1,0 +1,77 @@
+CALL pik()
+
+
+CALL pik(1,2)
+
+
+CALL pik2(1)
+
+CALL pik2('172-32-1176')
+
+CALL pik2(SELECT au_id FROM titleauthor WHERE )
+
+
+CALL pik2('Green')
+
+
+
+
+
+
+
+
+
+
+DELIMITER $$
+
+
+USE `pubs10`$$
+
+
+DROP PROCEDURE IF EXISTS `pik2`$$
+
+
+
+-- 查、删 CREATE DEFINER=`root`@`localhost` 
+
+PROCEDURE `pik2`(s varchar(20))
+
+-- 增、改 CREATE DEFINER=`root`@`localhost` PROCEDURE `pik2`(a VARCHAR(20),b VARCHAR(20),c VARCHAR(20))
+
+	BEGIN
+
+	-- 查 select * from authors where au_id=s;
+	
+
+	-- SELECT t.title FROM titles t WHERE t.title_id IN(
+	
+	-- 	SELECT ti.title_id FROM titleauthor ti WHERE ti.au_id IN(
+			
+	-- 		SELECT au.au_id FROM AUTHORS au WHERE au.au_lname=s
+	
+	-- 	)
+	
+	-- );
+	
+	-- 增 INSERT INTO AUTHORS(au_id,au_lname,au_fname) VALUES(a,b,c);
+	
+	-- 删 DELETE FROM AUTHORS WHERE au_id=s
+
+	-- 改 UPDATE AUTHORS SET au_lname=a,au_fname=b WHERE au_id=c
+	
+	
+END$$
+
+
+DELIMITER ;
+
+
+
+
+
+
+
+java调用只需要改两行语句
+
+CallableStatement  pst=con.prepareCall("{pubs10.pp2(?)}");
+pst.setString(1, au_id);

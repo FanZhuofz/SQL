@@ -1,0 +1,41 @@
+-- 根据作者编号（参数），查询某一个作者出版的图书总数，合著数量和单著数量。
+-- 显示的结构如下：
+-- 编号  总数  合著  单著
+
+
+-- 根据作者编号查询显示该作者出版图书编号、总数
+SELECT title_id,COUNT(au_id) num FROM titleauthor WHERE au_id='213-46-8915'
+
+ CALL work01('213-46-8915')
+-- 查询显示合著作者编号及总数(一本书，两人(含)以上编著)【title_id=1,au_id>=2】
+SELECT au_id FROM titleauthor GROUP BY au_id HAVING  COUNT(au_id)>=2;
+-- 查询显示单著作者编号及总数(一个人，编著两本(含)以上书)【au_id=1,title_id>=1】
+
+
+
+
+
+
+
+
+
+
+
+
+
+work01存储过程
+
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `work01`$$
+
+CREATE
+    
+    PROCEDURE `pubs10`.`work01`(s VARCHAR(20))
+    
+    BEGIN
+	SELECT title_id,COUNT(au_id) zongshu FROM titleauthor WHERE au_id=s;
+    END$$
+
+DELIMITER ;

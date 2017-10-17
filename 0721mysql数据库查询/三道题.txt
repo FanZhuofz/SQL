@@ -1,0 +1,151 @@
+-- 查询所有图书信息
+SELECT * FROM titles;
+
+-- 根据作者名au_lname找出作者编号au_id
+SELECT au_id FROM AUTHORS  WHERE au_lname='white';
+
+-- 根据作者编号au_id找出图书编号title_id
+SELECT title_id FROM titleauthor WHERE au_id='172-32-1176';
+
+-- 根据图书编号title_id找出图书信息*
+SELECT * FROM titles WHERE title_id='ps3333';
+
+
+-- （嵌套）根据作者名au_lname找出图书信息*
+SELECT * FROM titles WHERE title_id IN(
+ SELECT title_id FROM titleauthor WHERE au_id IN(
+  SELECT au_id FROM AUTHORS  WHERE au_lname='white'))
+  
+  
+  
+-- 查询bu1032这本书是哪些作者编的，显示作者信息
+SELECT * FROM AUTHORS WHERE au_id IN(
+ SELECT au_id FROM titleauthor WHERE title_id IN(
+  SELECT title_id FROM titles WHERE title_id='bu1032'
+ )
+);
+
+SELECT *FROM AUTHORS WHERE au_id IN(
+ SELECT au_id FROM titleauthor WHERE title_id='bu1032'
+);
+
+
+
+-- 查询state='ca'地区的作者，出版的图书，显示图书信息
+
+SELECT * FROM titles WHERE title_id IN(
+ SELECT title_id FROM titleauthor WHERE au_id IN(
+  SELECT au_id FROM AUTHORS WHERE  state='ca'
+ ) 
+);
+
+-- 查询单价大于10的图书是哪些作者编的，显示作者信息
+
+SELECT * FROM AUTHORS WHERE au_id IN(
+ SELECT au_id FROM titleauthor WHERE title_id IN(
+  SELECT title_id FROM titles WHERE price>'10' 
+ )
+);
+
+-- 查询哪些作者没有出书，显示（没有出书的）作者信息
+
+SELECT * FROM AUTHORS WHERE au_id NOT IN(
+ SELECT au_id FROM titleauthor
+);
+
+
+
+
+-- 分类汇总
+-- 求出最大值，最小值，平均值，求和，计数
+-- MAX(字段名),MIN(字段名),AVG(字段名),SUM(字段名),COUNT(字段名)
+SELECT MAX(price) FROM titles;
+
+-- 起别名（把Max(price)改为max）【都可以起别名】
+SELECT MAX(price) 'max',MIN(price),AVG(price),SUM(price),COUNT(*) FROM titles;
+
+-- 显示每个类型里面单价最高的
+SELECT TYPE,MAX(price) FROM titles GROUP BY TYPE;
+
+-- 显示每个类型里面单价大于20的
+SELECT TYPE,MAX(price) FROM titles GROUP BY TYPE HAVING MAX(price)>20;
+
+-- 显示每个类型里面最大值不等于空的
+SELECT TYPE,MAX(price) FROM titles GROUP BY TYPE HAVING MAX(price)IS NOT NULL;
+
+
+
+
+
+-- 自然链接
+-- 查询所有出版图书情况，显示图书名字和作者名字两个字段
+
+SELECT au.au_id,t.title_id,au.au_lname,t.title FROM AUTHORS au,titleauthor ti,titles t WHERE au.au_id=ti.au_id AND ti.title_id=t.title_id;
+
+ 
+ -- 外链接（内连接，左，右，全）
+ -- 两张表链接筛选（笛卡尔积）
+SELECT * FROM AUTHORS au INNER JOIN titleauthor ti;
+ -- 两张表链接后的筛选数据与第三张表链接再去筛选
+ SELECT * FROM AUTHORS au INNER JOIN titleauthor ti ON au.au_id=ti.au_id
+  INNER JOIN titles t ON  ti.title_id=t.title_id;
+  -- 直接可以给后面加where条件
+  SELECT * FROM AUTHORS au INNER JOIN titleauthor ti ON au.au_id=ti.au_id
+  INNER JOIN titles t ON  ti.title_id=t.title_id WHERE au.state IN('ca','ks');
+  
+  
+  
+  -- 【1】查询哪些作者没有出书，显示作者名字（三种方法）
+-- 1【嵌套】---ok
+SELECT au_lname FROM AUTHORS WHERE au_id NOT IN(
+ SELECT au_id FROM titleauthor
+);
+-- 2【自然链接】
+SELECT au_lname FROM AUTHORS WHERE au_id NOT IN (SELECT au.au_id FROM AUTHORS au,titleauthor ti WHERE au.au_id = ti.au_id);
+
+
+-- 将查询的结果赋给a，然后查询--
+-- SELECT * FROM (SELECT au.au_lname FROM AUTHORS au,titleauthor ti WHERE au.au_id = ti.au_id) a;
+-- 3【外链接】
+-- ELECT * FROM (SELECT au.au_lname FROM AUTHORS au INNER JOIN titleauthor ti ON au.au_id=ti.au_id) a;
+  
+
+
+
+  
+  -- 【2】查询出版了两本（含）图书以上的作者【au_id>=2】，显示作者信息（三种方法）
+  
+-- 1【嵌套】  count(au_id)可以写成count(1)和count(*)，但是count(1)安全
+SELECT * FROM AUTHORS WHERE au_id IN(
+ SELECT au_id FROM titleauthor GROUP BY au_id HAVING COUNT(au_id)>=2
+);
+
+-- 2【自然链接】---ok
+SELECT au.* FROM AUTHORS au,titleauthor ti WHERE ti.au_id=au.au_id GROUP BY ti.au_id HAVING COUNT(ti.au_id)>=2;
+ 
+-- 3【外链接】
+SELECT au.* FROM AUTHORS au INNER JOIN titleauthor ti ON ti.au_id=au.au_id GROUP BY ti.au_id HAVING COUNT(ti.au_id)>=2;
+  
+  
+  
+  
+  -- 【3】查询哪些图书是两个（含）以上作者合著的【title_id>=2】，显示书名和作者名（两种方法）
+
+-- 1【自然链接】
+SELECT t.title,au.au_lname FROM AUTHORS au,titles t,titleauthor ti WHERE au.au_id=ti.au_id AND ti.title_id=t.title_id GROUP BY ti.title_id HAVING COUNT(ti.title_id)>=2;
+ 
+-- 2【外链接】
+SELECT t.title,au.au_lname FROM AUTHORS au INNER JOIN titleauthor ti ON au.au_id=ti.au_id
+ INNER JOIN titles t ON ti.title_id=t.title_id GROUP BY ti.title_id HAVING COUNT(ti.title_id)>=2;
+
+
+
+
+
+
+
+
+
+SELECT TYPE,GROUP_CONCAT(title_id) FROM titles GROUP BY TYPE;  -- 按图书类型查找所有图书类型下的图书id
+
+SELECT TYPE FROM titles GROUP BY TYPE;
