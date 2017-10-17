@@ -1,0 +1,106 @@
+--------------------------------程序控制结构-----------------------------------
+-- if语句格式
+set SERVEROUTPUT ON
+declare
+ a int;
+ b int;
+ begin
+    a:=10;
+    b:=1;
+    if a>b then
+        dbms_output.put_line(a);
+    else
+        dbms_output.put_line(b);
+    end if;
+end;
+-- -----------------------------------------
+-- loop循环语句
+set SERVEROUTPUT ON
+declare
+    a int;
+begin
+    a:=10;
+    loop exit when a<0;
+        a:=a-1;
+        dbms_output.put_line(a);
+    end loop;
+end;
+-- -----------------------------------------
+-- for循环语句
+set SERVEROUTPUT ON
+ begin
+    for a in 0..100 loop
+        dbms_output.put_line(a);    -- a为0~100循环输出
+    end loop;
+end;
+-- ------------------------------------------------
+
+
+
+-----------------------------------------------------存储过程------------------------------------
+set SERVEROUTPUT ON
+declare
+k int ;
+begin
+    PP4(3,k);
+    dbms_output.put_line(k);
+end;
+-- -----------------------------------------游标---------------------------------------------
+-- 
+declare cursor yb
+is
+select au_id from authors;
+a authors.AU_ID%type;
+BEGIN
+  open yb;
+  loop
+      fetch yb into a;
+      dbms_output.put_line(a);
+  exit when yb%notfound;
+  end loop;
+end;
+-- 游标参数
+declare cursor yb(x varchar2)
+is
+select au_lname from authors where state=x;
+a authors.au_lname%type;
+BEGIN
+  open yb('CA');
+  loop
+      fetch yb into a;
+      dbms_output.put_line(a);
+  exit when yb%notfound;
+  end loop;
+end;
+
+-- 存储过程中写游标
+CREATE OR REPLACE PROCEDURE PP5 AS 
+cursor yb(x varchar2)
+is
+select au_lname from authors where state=x;
+a authors.au_lname%type;
+BEGIN
+  open yb('CA');
+  loop
+      fetch yb into a;
+      dbms_output.put_line(a);
+  exit when yb%notfound;
+  end loop;
+END PP5;
+-- 游标变量的基本用法
+CREATE OR REPLACE PROCEDURE PP6 AS 
+cursor yb is
+select * from authors where state='CA';
+a authors.au_lname%type;
+type yb1 is ref cursor; -- 定义一个游标类型的变量
+yb2 yb1;
+BEGIN
+  open yb2 for select au_id from authors;   -- 在此处编写代码的时候注意起格式
+  loop
+      fetch yb2 into a;
+      exit when yb2%notfound;
+      dbms_output.put_line(a);
+  end loop;
+END PP6;
+-- 在工作表中调用存储过程
+exec pp6();

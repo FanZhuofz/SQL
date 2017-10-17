@@ -1,0 +1,34 @@
+-- rownum   rowid   练习
+-- 1、直接查询前三个---------------------------------------------------------------
+select rownum,au.* from Dawn.authors au
+ where rownum<=3
+
+-- 2、显示出4~6的数据-----------------------------------------------------------------
+select * from (select rownum id,au.* from authors au) qq
+ where id>=4 and id<=6
+    
+select * from (select rownum id,au.* from authors au) qq
+ where id between 4 and 6
+
+select * from authors where au_id not in(
+ select au_id from authors where rownum<=3)
+ and rownum<=3
+ 
+-- 3、补集，求前三个【先找前六个，在前六个里面找前三个】--------------------------------------
+ -- 比较两个表里面不同的地方
+select * from authors where rownum<=6
+ minus
+select * from authors where rownum<=3
+
+-- 4、第二个的升级版---------------------------------------------------------
+select * from (select rownum id,au.* from authors au
+ where rownum<=6) qq
+ where id>3
+ 
+-- rownum 配合decode做报表查询------------------------------------------------------------------
+select decode(rownum-min_sno,0,b.au_id,' ') aid,decode(rownum-min_sno,0,1,rownum+1-min_sno) sno from
+(select rownum,t.* from titleauthor t) a,
+(select au_id,min(rownum) min_sno
+ from(select * from titleauthor)
+  group by au_id order by min_sno) b
+ where a.au_id=b.au_id order by min_sno

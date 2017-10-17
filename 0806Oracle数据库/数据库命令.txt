@@ -1,0 +1,11 @@
+-- ----创建用户dawnfan--------
+-- USER SQL
+CREATE USER dawnfan IDENTIFIED BY "null"  ;	-- 创建新用户dawnfan
+
+-- QUOTAS
+
+-- ROLES
+GRANT "DBA" TO dawnfan ;	-- 授权DBA
+GRANT "CONNECT" TO dawnfan ;	-- 授权CONNECT
+
+-- SYSTEM PRIVILEGES

@@ -1,0 +1,32 @@
+
+-- 绑定变量，将authors.au_id字段绑定到aid上
+set SERVEROUTPUT ON
+DECLARE
+    aid authors.au_id%type;
+begin
+    select au_id into aid from authors where au_id='172-32-1176';
+    dbms_output.put_line(aid);
+end;
+--------------------------------------------------------
+set SERVEROUTPUT ON
+DECLARE
+    aid authors.au_id%type;
+    aulname authors.au_lname%type;
+begin
+    select au_id,au_lname into aid,aulname from authors where au_id='172-32-1176';
+    dbms_output.put_line(aid||'****'||aulname);
+end;
+------------------------------------------------------------
+set SERVEROUTPUT ON
+DECLARE
+   -- aid authors.au_id%type;
+   -- aulname authors.au_lname%type;
+    type c is record (
+        aid authors.au_id%type,
+        aname authors.au_lname%type
+    );
+    cc c;
+begin
+    select au_id,au_lname into cc from authors where au_id='172-32-1176';
+    dbms_output.put_line(cc.aid||'****'||cc.aname);
+end;
