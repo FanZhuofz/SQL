@@ -1,0 +1,5 @@
+lsnrctl  set log_status off; 
+lsnrctl  save_config
+
+
+lsnrctl  set log_status on; 
